@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+
+  # ── NLP Microservice (Python / FastAPI) ──────────────────────────────────────
+  nlp-service:
+    build:
+      context: ./nlp_service        # folder that contains the Dockerfile
+      dockerfile: Dockerfile
+    container_name: nlp-service
+    ports:
+      - "8000:8000"                 # access at http://localhost:8000
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Spring Boot Backend (Java) ────────────────────────────────────────────────
+  # Uncomment once the backend developer has a JAR / Dockerfile ready
+  # backend:
+  #   image: your-springboot-image:latest   # or build: ./backend
+  #   container_name: spring-backend
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - NLP_SERVICE_URL=http://nlp-service:8000   # ← internal Docker network URL
+  #   depends_on:
+  #     nlp-service:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+
+# ── Internal Docker network ───────────────────────────────────────────────────
+# All services in this file can talk to each other by container name.
+# Spring Boot calls: http://nlp-service:8000/analyse/full
+# (not localhost — that only works outside Docker)

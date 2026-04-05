@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Urbanist", sans-serif;
+  
+  --color-accent: #6366f1;
+  --color-accent-hover: #4f46e5;
+  --color-bg-dark: #0f172a;
+  --color-card-dark: rgba(30, 41, 59, 0.7);
+
+  --color-bg-light: #f8fafc;
+  --color-card-light: rgba(255, 255, 255, 0.8);
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 dark:bg-[#0f172a] dark:text-slate-200 font-sans antialiased transition-colors duration-300;
+  }
+}
+
+@utility glass {
+  @apply bg-white/70 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200 dark:border-slate-700/50;
+}
+
+@utility glass-card {
+  @apply glass rounded-2xl shadow-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-indigo-500/10;
+}
+
+@utility btn-primary {
+  @apply bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 px-4 rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none shadow-lg shadow-indigo-500/20;
+}
+
+@utility input-field {
+  @apply w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all;
+}
+
+/* Quill Editor Theme Overrides */
+.ql-container.ql-snow {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0 0 0.5rem 0.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  color: #1e293b;
+}
+
+.dark .ql-container.ql-snow {
+  border: 1px solid #334155 !important;
+  background: rgba(30, 41, 59, 0.3);
+  color: #e2e8f0;
+}
+
+.ql-toolbar.ql-snow {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: rgba(248, 250, 252, 0.8);
+}
+
+.dark .ql-toolbar.ql-snow {
+  border: 1px solid #334155 !important;
+  background: rgba(15, 23, 42, 0.8);
+}
+.ql-editor {
+  min-height: 300px;
+  font-size: 1.1rem;
+}
