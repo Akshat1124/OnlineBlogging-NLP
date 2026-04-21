@@ -1,65 +1,90 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Urbanist", sans-serif;
+:root {
+  /* Premium Design System Colors */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-hover: #f9fafb;
+  --surface-active: #f3f4f6;
   
-  --color-accent: #6366f1;
-  --color-accent-hover: #4f46e5;
-  --color-bg-dark: #0f172a;
-  --color-card-dark: rgba(30, 41, 59, 0.7);
+  --text-primary: #111827;
+  --text-secondary: #374151; /* Darkened for better contrast */
+  --text-tertiary: #4b5563;  /* Darkened for ~4.5:1 ratio */
+  --text-quaternary: #6b7280;
+  
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-soft: rgba(99, 102, 241, 0.08);
+  
+  --border: #e5e7eb;
+  --border-hover: #d1d5db;
+  
+  --positive: #10b981;
+  --positive-bg: #ecfdf5;
+  --negative: #ef4444;
+  --negative-bg: #fef2f2;
+  --neutral-tag: #6366f1;
+  --neutral-tag-bg: #eef2ff;
 
-  --color-bg-light: #f8fafc;
-  --color-card-light: rgba(255, 255, 255, 0.8);
-}
-
-@layer base {
-  body {
-    @apply bg-slate-50 text-slate-900 dark:bg-[#0f172a] dark:text-slate-200 font-sans antialiased transition-colors duration-300;
-  }
-}
-
-@utility glass {
-  @apply bg-white/70 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200 dark:border-slate-700/50;
-}
-
-@utility glass-card {
-  @apply glass rounded-2xl shadow-xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-indigo-500/10;
-}
-
-@utility btn-primary {
-  @apply bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 px-4 rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none shadow-lg shadow-indigo-500/20;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 }
 
-@utility input-field {
-  @apply w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Quill Editor Theme Overrides */
-.ql-container.ql-snow {
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 0 0 0.5rem 0.5rem;
-  background: rgba(255, 255, 255, 0.5);
-  color: #1e293b;
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.dark .ql-container.ql-snow {
-  border: 1px solid #334155 !important;
-  background: rgba(30, 41, 59, 0.3);
-  color: #e2e8f0;
+/* Base styles for the layout */
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.ql-toolbar.ql-snow {
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 0.5rem 0.5rem 0 0;
-  background: rgba(248, 250, 252, 0.8);
+main {
+  flex: 1;
+  min-height: 0;
 }
 
-.dark .ql-toolbar.ql-snow {
-  border: 1px solid #334155 !important;
-  background: rgba(15, 23, 42, 0.8);
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
-.ql-editor {
-  min-height: 300px;
-  font-size: 1.1rem;
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
 }
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-quaternary);
+}
+
+/* Utility Animations */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
