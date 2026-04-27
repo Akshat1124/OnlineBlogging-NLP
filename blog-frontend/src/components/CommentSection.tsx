@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import useAuthStore from '../store/authStore';
+import Avatar from './ui/Avatar';
+import Button from './ui/Button';
 
 interface Comment {
   id: number;
@@ -22,6 +24,12 @@ function formatDate(dateStr: string): string {
     month: 'short',
     day: 'numeric',
   });
+}
+
+function getSentimentStyle(label: string | null) {
+  if (label === 'POSITIVE') return 'text-emerald-600';
+  if (label === 'NEGATIVE') return 'text-red-600';
+  return 'text-indigo-600';
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
@@ -60,89 +68,84 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     }
   };
 
-  const getSentimentColor = (label: string | null) => {
-    if (label === 'POSITIVE') return 'text-positive';
-    if (label === 'NEGATIVE') return 'text-negative';
-    return 'text-neutral-tag';
-  };
-
   return (
-    <section className="mt-12 pt-8 border-t border-border">
-      <h2 className="text-[14px] font-bold tracking-tight mb-6">
+    <section id="comments-section">
+      <h2 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         Discussion
-        <span className="font-medium text-text-quaternary ml-2">
+        <span className="text-sm font-medium text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-lg">
           {comments.length}
         </span>
       </h2>
 
       {isAuthenticated ? (
-        <form onSubmit={handleSubmit} className="mb-10 block">
+        <form onSubmit={handleSubmit} className="mb-8">
           <div className="flex gap-3 items-start">
-            <div className="w-8 h-8 rounded-full bg-accent text-white flex-shrink-0 flex items-center justify-center text-[11px] font-bold mt-1">
-              {user?.username?.charAt(0).toUpperCase() || 'U'}
-            </div>
+            <Avatar name={user?.username || 'User'} size="sm" className="mt-1" />
             <div className="flex-1">
               <textarea
-                className="w-full bg-surface border border-border px-4 py-3 text-[13px] leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent resize-none rounded-xl transition-all"
+                id="comment-input"
+                className="w-full bg-white border border-slate-200 px-4 py-3 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none rounded-xl transition-all placeholder:text-slate-400"
                 rows={3}
                 placeholder="Write a comment..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
               />
               <div className="mt-3 flex justify-end">
-                <button
+                <Button
                   type="submit"
+                  size="sm"
                   disabled={submitting || !newComment.trim()}
-                  className="text-[12px] font-bold tracking-wide uppercase bg-accent text-white px-5 py-2 rounded-lg hover:bg-accent-hover disabled:opacity-30 transition-colors"
+                  loading={submitting}
                 >
-                  {submitting ? 'Posting...' : 'Post'}
-                </button>
+                  Post
+                </Button>
               </div>
             </div>
           </div>
         </form>
       ) : (
-        <div className="bg-surface rounded-xl p-4 mb-8 text-center border border-border">
-          <p className="text-[13px] text-text-tertiary">
-            Log in to join the discussion.
+        <div className="bg-slate-50 rounded-xl p-5 mb-8 text-center border border-slate-200">
+          <p className="text-sm text-slate-500">
+            <Link to="/login" className="text-indigo-600 font-semibold hover:underline">Log in</Link> to join the discussion.
           </p>
         </div>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {comments.map((comment) => (
-          <div key={comment.id} className="flex gap-3">
-            <div className="w-8 h-8 rounded-full bg-surface-active text-text-secondary flex-shrink-0 flex items-center justify-center text-[11px] font-bold mt-1">
-              {(comment.user?.username || 'A').charAt(0).toUpperCase()}
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Link to={`/u/${comment.user?.username || 'Anonymous'}`} className="text-[13px] font-bold text-text-primary hover:underline">
+          <div key={comment.id} className="flex gap-3 animate-fade-in">
+            <Avatar name={comment.user?.username || 'A'} size="sm" className="mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <Link
+                  to={`/u/${comment.user?.username || 'Anonymous'}`}
+                  className="text-sm font-semibold text-slate-800 hover:text-indigo-600 transition-colors"
+                >
                   {comment.user?.username || 'Anonymous'}
                 </Link>
-                <span className="text-text-quaternary text-[11px]">·</span>
-                <span className="text-text-quaternary text-[12px]">
+                <span className="text-slate-300">·</span>
+                <span className="text-xs text-slate-400">
                   {formatDate(comment.createdAt)}
                 </span>
                 {comment.sentimentLabel && (
                   <>
-                    <span className="text-text-quaternary text-[11px]">·</span>
-                    <span className={`text-[12px] font-medium ${getSentimentColor(comment.sentimentLabel)}`}>
+                    <span className="text-slate-300">·</span>
+                    <span className={`text-xs font-medium ${getSentimentStyle(comment.sentimentLabel)}`}>
                       {comment.sentimentLabel.toLowerCase()}
                     </span>
                   </>
                 )}
               </div>
-              <p className="text-[14px] text-text-secondary leading-relaxed bg-surface hover:bg-surface-hover transition-colors px-4 py-3 rounded-tr-lg rounded-bl-lg rounded-br-3xl border border-transparent hover:border-border">
+              <div className="bg-slate-50 hover:bg-slate-100 transition-colors px-4 py-3 rounded-xl rounded-tl-sm text-sm text-slate-700 leading-relaxed border border-slate-100">
                 {comment.content}
-              </p>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
       {comments.length === 0 && (
-        <p className="text-[13px] text-text-tertiary text-center py-10">
+        <p className="text-sm text-slate-400 text-center py-10">
           No comments yet. Start the conversation!
         </p>
       )}

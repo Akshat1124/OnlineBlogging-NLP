@@ -5,15 +5,12 @@ import useAuthStore from '../store/authStore';
 import CommentSection from '../components/CommentSection';
 import api from '../api/axios';
 import { ArrowLeft, Heart, Sparkles } from 'lucide-react';
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
+import Avatar from '../components/ui/Avatar';
+import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
+import { SkeletonArticle } from '../components/ui/Skeleton';
+import { formatDateLong, getSentimentConfig } from '../lib/utils';
 
 const Article: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,7 +40,7 @@ const Article: React.FC = () => {
 
   const handleLike = async () => {
     if (!isAuthenticated) return;
-    
+
     // Optimistic UI update
     const prevLiked = liked;
     const prevCount = likeCount;
@@ -64,22 +61,9 @@ const Article: React.FC = () => {
 
   if (loading || !currentPost) {
     return (
-      <div className="h-full overflow-y-auto bg-bg p-6">
-        <div className="max-w-[800px] mx-auto bg-surface rounded-3xl p-8 border border-border shadow-sm animate-pulse">
-          <div className="h-10 w-3/4 bg-surface-hover rounded-xl mb-6" />
-          <div className="flex gap-4 mb-10">
-             <div className="h-10 w-10 bg-surface-hover rounded-full" />
-             <div className="space-y-2 flex-1">
-                <div className="h-4 w-1/4 bg-surface-hover rounded" />
-                <div className="h-3 w-1/3 bg-surface-hover rounded" />
-             </div>
-          </div>
-          <div className="space-y-4">
-            <div className="h-4 w-full bg-surface-hover rounded" />
-            <div className="h-4 w-full bg-surface-hover rounded" />
-            <div className="h-4 w-5/6 bg-surface-hover rounded" />
-            <div className="h-4 w-4/6 bg-surface-hover rounded" />
-          </div>
+      <div className="h-full overflow-y-auto p-6">
+        <div className="max-w-3xl mx-auto">
+          <SkeletonArticle />
         </div>
       </div>
     );
@@ -89,119 +73,118 @@ const Article: React.FC = () => {
     ? currentPost.tags.split(',').filter(Boolean)
     : [];
 
-  const sentimentColor =
-    currentPost.sentiment === 'POSITIVE' ? 'text-positive bg-positive-bg border-positive/20' :
-    currentPost.sentiment === 'NEGATIVE' ? 'text-negative bg-negative-bg border-negative/20' :
-    'text-neutral-tag bg-neutral-tag-bg border-neutral-tag/20';
+  const sentimentConfig = getSentimentConfig(currentPost.sentiment);
 
   return (
-    <div className="h-full overflow-y-auto overflow-x-hidden bg-bg">
-      <div className="max-w-[840px] mx-auto px-4 md:px-6 py-10">
-        
+    <div className="h-full overflow-y-auto overflow-x-hidden">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 lg:py-10">
+
         {/* Navigation */}
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-text-tertiary hover:text-text-primary transition-all mb-6 ml-2 bg-white px-4 py-2 rounded-full border border-border shadow-sm hover:shadow-md"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors mb-8 group"
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
           Back to feed
         </Link>
 
         {/* Main Article Card */}
-        <div className="bg-surface rounded-[32px] border border-border shadow-sm p-6 md:p-12 mb-8 overflow-hidden w-full relative">
-          
-          <header className="mb-10 w-full">
-            <h1 className="text-[32px] md:text-[42px] font-extrabold tracking-tight leading-tight mb-6 break-words text-text-primary">
-              {currentPost.title}
-            </h1>
+        <Card padding="none" className="mb-8 overflow-hidden">
+          <div className="p-6 sm:p-8 lg:p-10">
+            <header className="mb-8">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight mb-6 text-slate-900 break-words">
+                {currentPost.title}
+              </h1>
 
-            <div className="flex flex-wrap items-center gap-4 text-[13px] text-text-tertiary font-medium">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center text-[16px] font-bold shadow-md">
-                  {currentPost.username?.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <Link to={`/u/${currentPost.username}`} className="text-text-primary font-bold block hover:underline">{currentPost.username}</Link>
-                  <span className="text-[12px]">{formatDate(currentPost.createdAt)}</span>
-                </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link to={`/u/${currentPost.username}`} className="flex items-center gap-3 group/author">
+                  <Avatar name={currentPost.username || 'U'} size="md" />
+                  <div>
+                    <span className="text-sm font-semibold text-slate-800 block group-hover/author:text-indigo-600 transition-colors">
+                      {currentPost.username}
+                    </span>
+                    <span className="text-xs text-slate-400">{formatDateLong(currentPost.createdAt)}</span>
+                  </div>
+                </Link>
+
+                {currentPost.sentiment && (
+                  <Badge
+                    variant={currentPost.sentiment === 'POSITIVE' ? 'positive' : currentPost.sentiment === 'NEGATIVE' ? 'negative' : 'neutral'}
+                    className="ml-auto"
+                  >
+                    <Sparkles size={12} className="mr-1" />
+                    {sentimentConfig.label}
+                  </Badge>
+                )}
               </div>
-              
-              {currentPost.sentiment && (
-                <div className={`ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl border ${sentimentColor} font-bold text-[12px]`}>
-                  <Sparkles size={14} />
-                  {currentPost.sentiment}
-                </div>
-              )}
-            </div>
-          </header>
+            </header>
 
-          {/* AI Summary Card (nested) */}
-          {currentPost.summary && (
-            <div className="bg-accent-soft/40 rounded-[20px] p-6 mb-10 border border-accent/10 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-accent/60 rounded-l-full"></div>
-              <p className="text-[12px] font-extrabold tracking-widest uppercase text-accent mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-accent flex-shrink-0 animate-pulse" />
-                AI Summary
-              </p>
-              <p className="text-[15px] text-text-primary font-medium leading-relaxed">
-                {currentPost.summary}
-              </p>
-            </div>
-          )}
-
-          {/* Keywords as Pills */}
-          {tagsArray.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-10 border-b border-border pb-8">
-              {tagsArray.map((tag, i) => (
-                <span
-                  key={i}
-                  className="text-[13px] font-semibold px-4 py-1.5 bg-surface-hover text-text-secondary rounded-full border border-border hover:border-accent/40 transition-colors shadow-sm cursor-default"
-                >
-                  #{tag.trim()}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Article Content */}
-          <article className="w-full overflow-hidden break-words mb-12">
-            <div
-              dangerouslySetInnerHTML={{ __html: currentPost.content }}
-              className="prose max-w-none w-full break-words"
-            />
-          </article>
-
-          {/* Like Button */}
-          <div className="flex items-center gap-4 pt-6 border-t border-border">
-            {isAuthenticated ? (
-              <button
-                onClick={handleLike}
-                disabled={liked}
-                className={`flex items-center gap-2 text-[14px] font-bold px-6 py-3 rounded-xl transition-all shadow-sm ${
-                  liked
-                    ? 'text-white bg-negative border border-negative'
-                    : 'text-text-secondary bg-surface-hover border border-border hover:text-negative hover:bg-negative-bg hover:border-negative/30'
-                } disabled:cursor-default`}
-              >
-                <Heart size={18} fill={liked ? 'currentColor' : 'none'} className={liked ? 'animate-bounce' : ''} />
-                {liked ? 'Liked' : 'Like'}
-              </button>
-            ) : (
-              <div className="px-6 py-3 rounded-xl bg-surface-hover border border-border text-[14px] text-text-secondary font-medium">
-                Log in to like
+            {/* AI Summary */}
+            {currentPost.summary && (
+              <div className="bg-indigo-50 rounded-xl p-5 mb-8 border border-indigo-100 relative">
+                <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 rounded-l-xl" />
+                <p className="text-xs font-bold tracking-wider uppercase text-indigo-600 mb-2 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse-soft" />
+                  AI Summary
+                </p>
+                <p className="text-sm text-slate-700 leading-relaxed font-medium">
+                  {currentPost.summary}
+                </p>
               </div>
             )}
-            <span className="text-[14px] font-bold text-text-tertiary bg-surface-hover px-4 py-3 rounded-xl border border-border">
-              {likeCount} {likeCount === 1 ? 'Like' : 'Likes'}
-            </span>
-          </div>
-        </div>
 
-        {/* Comments wrapped in a Card */}
-        <div className="bg-surface rounded-[32px] border border-border shadow-sm p-6 md:p-10 mb-10">
+            {/* Tags */}
+            {tagsArray.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-8 pb-6 border-b border-slate-100">
+                {tagsArray.map((tag, i) => (
+                  <Badge key={i} variant="indigo">
+                    #{tag.trim()}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            {/* Article Content */}
+            <article className="w-full overflow-hidden break-words mb-8">
+              <div
+                dangerouslySetInnerHTML={{ __html: currentPost.content }}
+                className="prose max-w-none w-full break-words"
+              />
+            </article>
+
+            {/* Like Section */}
+            <div className="flex items-center gap-4 pt-6 border-t border-slate-100">
+              {isAuthenticated ? (
+                <button
+                  id="like-button"
+                  onClick={handleLike}
+                  disabled={liked}
+                  className={`flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 ${
+                    liked
+                      ? 'text-white bg-red-500 border border-red-500 shadow-sm'
+                      : 'text-slate-600 bg-white border border-slate-200 hover:text-red-500 hover:bg-red-50 hover:border-red-200'
+                  } disabled:cursor-default`}
+                >
+                  <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
+                  {liked ? 'Liked' : 'Like'}
+                </button>
+              ) : (
+                <div className="px-5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-500 font-medium">
+                  Log in to like
+                </div>
+              )}
+              <span className="text-sm font-semibold text-slate-500 bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200">
+                {likeCount} {likeCount === 1 ? 'Like' : 'Likes'}
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Comments */}
+        <Card padding="lg" className="mb-10">
           <CommentSection postId={Number(id)} />
-        </div>
-        
+        </Card>
+
       </div>
     </div>
   );

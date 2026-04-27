@@ -12,6 +12,7 @@ export interface Post {
   isSpam: boolean | null;
   spamScore: number | null;
   tags: string | null;
+  likesCount?: number;
 }
 
 interface BlogState {

@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
+import GeminiAssistant from '../components/GeminiAssistant';
 
 const MainLayout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
 
-  // Hide sidebar on auth pages
+  // Hide sidebar on auth pages and write page (write has its own panel)
   const isAuthPage = ['/login', '/register'].includes(location.pathname);
-  // Show sidebar on feed and article pages
-  const showSidebar = !isAuthPage;
+  const isWritePage = location.pathname === '/write';
+  const showSidebar = !isAuthPage && !isWritePage;
 
   return (
     <div className="h-screen flex flex-col">
@@ -28,6 +29,8 @@ const MainLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
+      {/* Gemini AI Assistant — always available */}
+      <GeminiAssistant />
     </div>
   );
 };

@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import api from '../lib/axios';
-import { useAuth } from '../context/AuthContext';
-import BlogCard, { Post } from '../components/BlogCard';
-import { User, Mail, Calendar, Edit3, Grid, Heart } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
+import api from '../api/axios';
+import useAuthStore from '../store/authStore';
+import { Post } from '../store/blogStore';
+import { Mail, Calendar, Grid, Heart, PenSquare } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import Avatar from '../components/ui/Avatar';
+import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
+import { SkeletonCard } from '../components/ui/Skeleton';
+import EmptyState from '../components/ui/EmptyState';
+import { getSentimentConfig } from '../lib/utils';
 
 const Profile: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const [posts, setPosts] = useState<Post[]>([]);
   const [activeTab, setActiveTab] = useState<'published' | 'liked'>('published');
   const [loading, setLoading] = useState(true);
@@ -18,105 +26,146 @@ const Profile: React.FC = () => {
         const response = await api.get('/users/me/posts');
         setPosts(response.data);
       } catch (error) {
-        toast.error('Failed to load your posts');
+        // Failed to load posts
       } finally {
         setLoading(false);
       }
     };
-
     fetchUserPosts();
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Profile Header */}
-      <div className="glass p-8 rounded-3xl mb-12 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/10 blur-3xl -mr-32 -mt-32 rounded-full" />
-        
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
-          <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-4xl font-bold shadow-2xl shadow-indigo-500/20">
-            {user?.username?.[0]?.toUpperCase() || 'U'}
-          </div>
-          
-          <div className="flex-1 text-center md:text-left space-y-4">
-            <div>
-              <h1 className="text-4xl font-bold mb-2 font-display">{user?.username}</h1>
-              <div className="flex flex-wrap justify-center md:justify-start gap-4 text-slate-400">
-                <div className="flex items-center space-x-1">
-                  <Mail size={16} />
-                  <span>{user?.email}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Calendar size={16} />
-                  <span>Joined April 2026</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap justify-center md:justify-start gap-6 pt-4">
-              <div className="text-center md:text-left">
-                <p className="text-2xl font-bold text-white">{posts.length}</p>
-                <p className="text-sm text-slate-500 uppercase tracking-wider">Posts</p>
-              </div>
-              <div className="text-center md:text-left">
-                <p className="text-2xl font-bold text-white">1.2k</p>
-                <p className="text-sm text-slate-500 uppercase tracking-wider">Views</p>
-              </div>
-              <div className="text-center md:text-left">
-                <p className="text-2xl font-bold text-white">45</p>
-                <p className="text-sm text-slate-500 uppercase tracking-wider">Likes</p>
-              </div>
-            </div>
-          </div>
-          
-          <button className="btn-primary flex items-center space-x-2 px-6">
-            <Edit3 size={18} />
-            <span>Edit Profile</span>
-          </button>
-        </div>
-      </div>
+    <div className="h-full overflow-y-auto">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 lg:py-10">
+        {/* Profile Header */}
+        <Card padding="lg" className="mb-8 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-32 bg-slate-50 border-b border-slate-100" />
 
-      {/* Tabs */}
-      <div className="space-y-8">
-        <div className="flex space-x-8 border-b border-slate-800">
-          <button 
-            onClick={() => setActiveTab('published')}
-            className={`pb-4 text-lg font-bold transition-all relative ${activeTab === 'published' ? 'text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
-          >
-            <div className="flex items-center space-x-2">
-              <Grid size={20} />
-              <span>Published Blogs</span>
-            </div>
-            {activeTab === 'published' && <div className="absolute bottom-0 left-0 w-full h-1 bg-indigo-400 rounded-full" />}
-          </button>
-          <button 
-            onClick={() => setActiveTab('liked')}
-            className={`pb-4 text-lg font-bold transition-all relative ${activeTab === 'liked' ? 'text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
-          >
-            <div className="flex items-center space-x-2">
-              <Heart size={20} />
-              <span>Liked Blogs</span>
-            </div>
-            {activeTab === 'liked' && <div className="absolute bottom-0 left-0 w-full h-1 bg-indigo-400 rounded-full" />}
-          </button>
-        </div>
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10 pt-4">
+            <Avatar name={user?.username || 'User'} size="xl" className="ring-4 ring-white shadow-lg" />
 
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => <div key={i} className="glass-card h-64 animate-pulse bg-slate-800/50" />)}
+            <div className="flex-1 text-center md:text-left space-y-3">
+              <div>
+                <h1 id="profile-heading" className="text-2xl font-extrabold text-slate-900 mb-1">
+                  {user?.username}
+                </h1>
+                <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-slate-500">
+                  {user?.email && (
+                    <div className="flex items-center gap-1.5">
+                      <Mail size={14} />
+                      <span>{user.email}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5">
+                    <Calendar size={14} />
+                    <span>Member</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap justify-center md:justify-start gap-8 pt-2">
+                <div className="text-center md:text-left">
+                  <p className="text-xl font-extrabold text-slate-900">{posts.length}</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Posts</p>
+                </div>
+              </div>
+            </div>
+
+            <Link to="/write">
+              <Button variant="secondary" icon={<PenSquare size={15} />}>
+                New Post
+              </Button>
+            </Link>
           </div>
-        ) : posts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map(post => <BlogCard key={post.id} post={post} />)}
+        </Card>
+
+        {/* Tabs */}
+        <div className="space-y-6">
+          <div className="flex gap-1 border-b border-slate-200">
+            <button
+              onClick={() => setActiveTab('published')}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all ${
+                activeTab === 'published'
+                  ? 'text-indigo-600 border-indigo-600'
+                  : 'text-slate-500 border-transparent hover:text-slate-700'
+              }`}
+            >
+              <Grid size={16} />
+              Published
+            </button>
+            <button
+              onClick={() => setActiveTab('liked')}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all ${
+                activeTab === 'liked'
+                  ? 'text-indigo-600 border-indigo-600'
+                  : 'text-slate-500 border-transparent hover:text-slate-700'
+              }`}
+            >
+              <Heart size={16} />
+              Liked
+            </button>
           </div>
-        ) : (
-          <div className="text-center py-20 glass rounded-3xl">
-            <p className="text-slate-400">No posts found in this category.</p>
-          </div>
-        )}
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
+            </div>
+          ) : posts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {posts.map(post => (
+                <ProfilePostCard key={post.id} post={post} />
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <EmptyState
+                title="No posts yet"
+                description="Start writing to see your posts here."
+                action={
+                  <Link to="/write">
+                    <Button icon={<PenSquare size={15} />}>Write Your First Post</Button>
+                  </Link>
+                }
+              />
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );
 };
+
+/* ─── Profile Post Card ───────────────────────────────────────── */
+function ProfilePostCard({ post }: { post: Post }) {
+  const sentimentConfig = getSentimentConfig(post.sentiment);
+  const tagsArray = post.tags ? post.tags.split(',').filter(Boolean).slice(0, 3) : [];
+
+  return (
+    <Link
+      to={`/post/${post.id}`}
+      className="block group bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-300"
+    >
+      <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors mb-2 line-clamp-2 leading-snug">
+        {post.title}
+      </h3>
+      {post.summary && (
+        <p className="text-sm text-slate-500 line-clamp-2 mb-3 leading-relaxed">{post.summary}</p>
+      )}
+      <div className="flex items-center gap-2 flex-wrap">
+        {tagsArray.map((tag, i) => (
+          <Badge key={i} variant="outline">#{tag.trim()}</Badge>
+        ))}
+        {post.sentiment && (
+          <Badge variant={post.sentiment === 'POSITIVE' ? 'positive' : post.sentiment === 'NEGATIVE' ? 'negative' : 'neutral'}>
+            {sentimentConfig.label}
+          </Badge>
+        )}
+      </div>
+      <p className="text-xs text-slate-400 mt-3">
+        {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+      </p>
+    </Link>
+  );
+}
 
 export default Profile;

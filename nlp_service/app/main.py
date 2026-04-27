@@ -10,7 +10,7 @@ Startup order:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import grammar, keywords, sentiment, summary, spam, analyse
+from app.routers import grammar, keywords, sentiment, summary, spam, analyse, moderate
 
 app = FastAPI(
     title="Online Blogging — NLP Microservice",
@@ -45,6 +45,7 @@ app.include_router(sentiment.router)
 app.include_router(summary.router)
 app.include_router(spam.router)
 app.include_router(analyse.router)
+app.include_router(moderate.router)
 
 
 # ── Health Check ─────────────────────────────────────────────────────────────

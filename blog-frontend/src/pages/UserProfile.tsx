@@ -2,8 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/axios';
 import { formatDistanceToNow } from 'date-fns';
-import { ArrowLeft, Sparkles, FileText } from 'lucide-react';
+import { ArrowLeft, FileText } from 'lucide-react';
 import { Post } from '../store/blogStore';
+import Avatar from '../components/ui/Avatar';
+import Badge from '../components/ui/Badge';
+import Card from '../components/ui/Card';
+import EmptyState from '../components/ui/EmptyState';
+import { getSentimentConfig } from '../lib/utils';
 
 interface PublicProfile {
   username: string;
@@ -38,114 +43,120 @@ const UserProfile: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">
-        <div className="w-8 h-8 flex items-center justify-center border-4 border-accent border-t-transparent rounded-full animate-spin-slow"></div>
+        <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin-slow" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="flex flex-col items-center justify-center h-full py-20 px-6">
-        <h2 className="text-xl font-bold mb-2">User not found</h2>
-        <Link to="/" className="text-accent underline">Go back to feed</Link>
+      <div className="h-full flex items-center justify-center">
+        <Card>
+          <EmptyState
+            title="User not found"
+            description="This user doesn't seem to exist."
+            action={
+              <Link to="/" className="text-indigo-600 font-semibold hover:underline text-sm">
+                Go back to feed
+              </Link>
+            }
+          />
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-bg py-12 px-4 md:px-6">
-      <div className="max-w-[720px] mx-auto mb-10">
+    <div className="h-full overflow-y-auto py-8 lg:py-10 px-4 sm:px-6">
+      <div className="max-w-3xl mx-auto">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-text-tertiary hover:text-text-primary transition-all mb-6 bg-white px-4 py-2 rounded-full border border-border shadow-sm hover:shadow-md w-max"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors mb-8 group"
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
           Back to feed
         </Link>
 
         {/* Profile Card */}
-        <div className="bg-surface rounded-3xl border border-border shadow-sm p-8 text-center relative overflow-hidden mb-10">
-          <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-accent-soft to-border/50"></div>
-          
-          <div className="w-28 h-28 mx-auto rounded-full bg-accent text-white flex items-center justify-center text-3xl font-bold border-4 border-surface shadow-md relative z-10 mb-4 bg-surface-active overflow-hidden">
-            {profile.profilePicture ? (
-              <img src={profile.profilePicture} alt={profile.username} className="w-full h-full object-cover" />
-            ) : (
-              profile.username.charAt(0).toUpperCase()
-            )}
-          </div>
-          
-          <h1 className="text-2xl font-extrabold text-text-primary mb-2 relative z-10">
-            {profile.username}
-          </h1>
-          <p className="text-[15px] text-text-secondary max-w-md mx-auto leading-relaxed relative z-10">
-            {profile.bio || "This user hasn't written a bio yet."}
-          </p>
-        </div>
+        <Card padding="lg" className="text-center relative overflow-hidden mb-8 shadow-none border border-slate-200">
+          <div className="absolute top-0 left-0 w-full h-24 bg-slate-50 border-b border-slate-100" />
 
-        <h2 className="text-xl font-bold mb-6 text-text-primary flex items-center gap-2">
-          <FileText size={20} />
-          {profile.username}'s Blog Posts
+          <div className="relative z-10">
+            <Avatar
+              name={profile.username}
+              src={profile.profilePicture}
+              size="xl"
+              className="mx-auto mb-4 ring-4 ring-white shadow-lg"
+            />
+
+            <h1 className="text-2xl font-extrabold text-slate-900 mb-2">
+              {profile.username}
+            </h1>
+            <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
+              {profile.bio || "This user hasn't written a bio yet."}
+            </p>
+
+            <div className="mt-4">
+              <span className="text-sm font-semibold text-slate-700">{posts.length}</span>
+              <span className="text-xs text-slate-400 ml-1">posts</span>
+            </div>
+          </div>
+        </Card>
+
+        <h2 className="text-lg font-bold mb-5 text-slate-900 flex items-center gap-2">
+          <FileText size={18} />
+          {profile.username}'s Posts
         </h2>
 
         {/* User's Posts Feed */}
         {posts.length === 0 ? (
-          <div className="text-center bg-surface border border-border rounded-xl p-10 text-text-tertiary">
-            It's quiet here... No posts yet.
-          </div>
+          <Card>
+            <EmptyState
+              title="It's quiet here..."
+              description="This user hasn't published any posts yet."
+            />
+          </Card>
         ) : (
-          <div className="grid grid-cols-1 gap-6">
-            {posts.map((post) => (
-              <Link
-                key={post.id}
-                to={`/post/${post.id}`}
-                className="block group bg-surface rounded-[28px] border border-border p-6 shadow-sm hover:shadow-md hover:border-accent/40 transition-all relative overflow-hidden"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center text-[12px] font-bold shadow-sm">
-                    {post.username?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="leading-tight">
-                    <span className="text-[14px] font-bold text-text-primary block">{post.username}</span>
-                    <span className="text-[11px] text-text-tertiary font-medium">
-                      {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-6">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-[20px] font-bold tracking-tight leading-snug text-text-primary group-hover:text-accent transition-colors mb-2 truncate whitespace-normal line-clamp-2">
-                      {post.title}
-                    </h3>
-                    {post.summary && (
-                      <p className="text-[14px] text-text-secondary leading-relaxed line-clamp-2 mb-4">
-                        {post.summary}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2 mt-auto pt-2 flex-wrap">
-                      {post.tags && post.tags.split(',').filter(Boolean).slice(0, 3).map((tag, i) => (
-                        <span
-                          key={i}
-                          className="text-[11px] font-bold px-3 py-1 bg-surface-hover hover:bg-surface-active text-text-secondary rounded-lg border border-border transition-colors cursor-default"
-                        >
-                          #{tag.trim()}
-                        </span>
-                      ))}
-                      {post.sentiment && (
-                        <span className={`text-[11px] font-bold px-3 py-1 rounded-lg border ${
-                           post.sentiment === 'POSITIVE' ? 'bg-positive-bg text-positive border-positive/20' :
-                           post.sentiment === 'NEGATIVE' ? 'bg-negative-bg text-negative border-negative/20' :
-                           'bg-neutral-tag-bg text-neutral-tag border-neutral-tag/20'
-                        }`}>
-                          {post.sentiment}
-                        </span>
-                      )}
+          <div className="grid grid-cols-1 gap-5">
+            {posts.map((post) => {
+              const sentimentConfig = getSentimentConfig(post.sentiment);
+              const tagsArray = post.tags ? post.tags.split(',').filter(Boolean).slice(0, 3) : [];
+
+              return (
+                <Link
+                  key={post.id}
+                  to={`/post/${post.id}`}
+                  className="block group bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-300"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <Avatar name={post.username || 'U'} size="sm" />
+                    <div className="leading-tight">
+                      <span className="text-sm font-semibold text-slate-800 block">{post.username}</span>
+                      <span className="text-xs text-slate-400 font-medium">
+                        {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                      </span>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+
+                  <h3 className="text-lg font-bold tracking-tight leading-snug text-slate-900 group-hover:text-indigo-600 transition-colors mb-2 line-clamp-2">
+                    {post.title}
+                  </h3>
+                  {post.summary && (
+                    <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 mb-3">{post.summary}</p>
+                  )}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {tagsArray.map((tag, i) => (
+                      <Badge key={i} variant="outline">#{tag.trim()}</Badge>
+                    ))}
+                    {post.sentiment && (
+                      <Badge variant={post.sentiment === 'POSITIVE' ? 'positive' : post.sentiment === 'NEGATIVE' ? 'negative' : 'neutral'}>
+                        {sentimentConfig.label}
+                      </Badge>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
