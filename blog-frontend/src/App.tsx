@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/authStore';
+import { useTheme } from './context/ThemeContext';
 import MainLayout from './layouts/MainLayout';
 import Feed from './pages/Feed';
 import Article from './pages/Article';
@@ -21,6 +22,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function App() {
   const { hydrate } = useAuthStore();
+  const { theme } = useTheme();
 
   useEffect(() => {
     hydrate();
@@ -31,14 +33,14 @@ function App() {
       <Router>
         <Routes>
           <Route element={<MainLayout />}>
-            {/* Public */}
+            {/* Public — guests can browse */}
             <Route path="/" element={<Feed />} />
             <Route path="/post/:id" element={<Article />} />
             <Route path="/u/:username" element={<UserProfile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* Private */}
+            {/* Private — requires authentication */}
             <Route
               path="/write"
               element={
@@ -62,18 +64,19 @@ function App() {
         </Routes>
       </Router>
 
-      {/* Toast notifications */}
+      {/* Toast notifications — theme-aware */}
       <Toaster
         position="bottom-right"
         toastOptions={{
           duration: 3000,
           style: {
-            background: '#0f172a',
+            background: theme === 'dark' ? '#1e293b' : '#0f172a',
             color: '#f8fafc',
             fontSize: '14px',
             fontWeight: 500,
             borderRadius: '12px',
             padding: '12px 16px',
+            border: theme === 'dark' ? '1px solid #334155' : 'none',
           },
           success: {
             iconTheme: {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import toast from 'react-hot-toast';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { BookOpen, ArrowRight } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 
@@ -39,16 +39,16 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4 bg-white">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4 bg-white dark:bg-slate-900">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <div className="w-12 h-12 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6 text-indigo-600">
-            <Sparkles size={24} />
+          <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-6 text-indigo-600 dark:text-indigo-400">
+            <BookOpen size={24} />
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">
             Welcome back
           </h1>
-          <p className="text-slate-500 text-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
             Enter your details to sign in to your account.
           </p>
         </div>
@@ -84,9 +84,9 @@ const Login: React.FC = () => {
           </Button>
         </form>
 
-        <p className="mt-10 text-center text-sm text-slate-500">
+        <p className="mt-10 text-center text-sm text-slate-500 dark:text-slate-400">
           Don't have an account?{' '}
-          <Link to="/register" className="text-slate-900 font-semibold hover:underline decoration-slate-300 underline-offset-4">
+          <Link to="/register" className="text-slate-900 dark:text-white font-semibold hover:underline decoration-slate-300 dark:decoration-slate-600 underline-offset-4">
             Sign up
           </Link>
         </p>

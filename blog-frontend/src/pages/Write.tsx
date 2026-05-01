@@ -12,7 +12,6 @@ import {
   ShieldAlert,
   Loader2,
   X,
-  Sparkles,
   RefreshCw,
   TrendingUp,
   AlertCircle,
@@ -51,9 +50,9 @@ function ToneIndicator({ sentiment, score }: { sentiment: string | null; score: 
   if (!sentiment) return null;
 
   const config: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-    POSITIVE: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', label: 'Positive' },
-    NEGATIVE: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500', label: 'Negative' },
-    NEUTRAL:  { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500', label: 'Neutral' },
+    POSITIVE: { bg: 'bg-emerald-50 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-400', dot: 'bg-emerald-500', label: 'Positive' },
+    NEGATIVE: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', dot: 'bg-red-500', label: 'Negative' },
+    NEUTRAL:  { bg: 'bg-amber-50 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400', dot: 'bg-amber-500', label: 'Neutral' },
   };
 
   const c = config[sentiment] || config.NEUTRAL;
@@ -86,16 +85,16 @@ function ModerationBlockedModal({
   rewriting: boolean;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full mx-4 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-lg w-full mx-4 overflow-hidden">
         {/* Header */}
-        <div className="bg-red-50 border-b border-red-100 px-6 py-4 flex items-center justify-between">
+        <div className="bg-red-50 dark:bg-red-900/30 border-b border-red-100 dark:border-red-800/50 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/50 flex items-center justify-center">
               <ShieldAlert size={20} className="text-red-600" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-red-900">Content Blocked</h3>
+              <h3 className="text-base font-bold text-red-900 dark:text-red-200">Content Blocked</h3>
               <p className="text-xs text-red-600 font-medium">
                 Toxicity Score: {Math.round(result.toxicity_score * 100)}%
               </p>
@@ -112,8 +111,8 @@ function ModerationBlockedModal({
         {/* Body */}
         <div className="px-6 py-5 space-y-4">
           {/* Reason */}
-          <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-            <p className="text-sm text-slate-700 leading-relaxed">
+          <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4 border border-slate-100 dark:border-slate-600">
+            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
               {result.reason}
             </p>
           </div>
@@ -170,7 +169,7 @@ function ModerationBlockedModal({
           {/* Suggestion */}
           {result.suggestion && (
             <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100 flex items-start gap-3">
-              <Sparkles size={14} className="text-indigo-600 mt-0.5 flex-shrink-0" />
+              <RefreshCw size={14} className="text-indigo-600 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-indigo-700 leading-relaxed">
                 {result.suggestion}
               </p>
@@ -179,7 +178,7 @@ function ModerationBlockedModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
           <Button variant="ghost" size="sm" onClick={onClose}>
             Edit Manually
           </Button>
@@ -350,12 +349,12 @@ const Write: React.FC = () => {
   return (
     <div className="flex flex-col md:flex-row h-full overflow-hidden">
       {/* ── Center: Editor ─────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50">
+      <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 dark:bg-slate-950">
         <div className="max-w-3xl mx-auto space-y-5">
 
           {/* Title Section */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs p-5 sm:p-6">
+            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
               Post Title
             </label>
             <input
@@ -364,13 +363,13 @@ const Write: React.FC = () => {
               placeholder="What's on your mind?"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight focus:outline-none bg-transparent placeholder:text-slate-300 text-slate-900"
+              className="w-full text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight focus:outline-none bg-transparent placeholder:text-slate-300 dark:placeholder:text-slate-600 text-slate-900 dark:text-white"
             />
           </div>
 
           {/* Tags Section */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
               Category & Tags
             </label>
             <input
@@ -379,14 +378,14 @@ const Write: React.FC = () => {
               placeholder="e.g. technology, design, frontend (comma separated)"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              className="w-full text-sm font-medium focus:outline-none bg-transparent placeholder:text-slate-300 text-slate-700"
+              className="w-full text-sm font-medium focus:outline-none bg-transparent placeholder:text-slate-300 dark:placeholder:text-slate-600 text-slate-700 dark:text-slate-200"
             />
           </div>
 
           {/* Editor Section */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 sm:p-6">
             <div className="flex items-center justify-between mb-4">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Content
               </label>
               {/* Real-time Tone Indicator */}
@@ -404,10 +403,10 @@ const Write: React.FC = () => {
 
           {/* Inline Warnings (non-blocking, real-time) */}
           {liveTone.sentiment === 'NEGATIVE' && liveTone.score > 0.3 && (
-            <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200 animate-fade-in">
+            <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800/50 animate-fade-in">
               <AlertTriangle size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm font-semibold text-amber-800">
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
                   Your content has a negative tone
                 </p>
                 <p className="text-xs text-amber-600 mt-0.5 leading-relaxed">
@@ -419,10 +418,10 @@ const Write: React.FC = () => {
 
           {/* Spam Warning */}
           {isSpam && (
-            <div className="flex items-start gap-3 p-4 bg-red-50 rounded-xl border border-red-200 animate-fade-in">
+            <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800/50 animate-fade-in">
               <ShieldAlert size={16} className="text-red-600 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm font-semibold text-red-800">
+                <p className="text-sm font-semibold text-red-800 dark:text-red-300">
                   Spam detected — publishing is disabled
                 </p>
                 <p className="text-xs text-red-600 mt-0.5 leading-relaxed">
@@ -446,7 +445,7 @@ const Write: React.FC = () => {
             <div className="flex items-center gap-3">
               {/* Moderation Status Badge */}
               {moderationResult?.allowed === true && (
-                <span className="text-xs text-emerald-600 font-medium hidden sm:flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium hidden sm:flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg">
                   <ShieldCheck size={13} />
                   Content approved
                 </span>

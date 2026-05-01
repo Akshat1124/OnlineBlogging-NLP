@@ -13,13 +13,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow active:bg-indigo-800 disabled:bg-indigo-300',
+    'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow active:bg-indigo-800 disabled:bg-indigo-300 dark:disabled:bg-indigo-800',
   secondary:
-    'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-xs active:bg-slate-100 disabled:text-slate-400',
+    'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500 shadow-xs active:bg-slate-100 dark:active:bg-slate-600 disabled:text-slate-400 dark:disabled:text-slate-500',
   ghost:
-    'text-slate-600 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200 disabled:text-slate-400',
+    'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 active:bg-slate-200 dark:active:bg-slate-700 disabled:text-slate-400',
   danger:
-    'bg-red-600 text-white hover:bg-red-700 shadow-sm active:bg-red-800 disabled:bg-red-300',
+    'bg-red-600 text-white hover:bg-red-700 shadow-sm active:bg-red-800 disabled:bg-red-300 dark:disabled:bg-red-800',
 };
 
 const sizes: Record<ButtonSize, string> = {
@@ -41,7 +41,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-1 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-1 dark:focus:ring-offset-slate-900 disabled:cursor-not-allowed',
         variants[variant],
         sizes[size],
         className

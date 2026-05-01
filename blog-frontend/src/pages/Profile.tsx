@@ -39,17 +39,17 @@ const Profile: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 lg:py-10">
         {/* Profile Header */}
         <Card padding="lg" className="mb-8 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-32 bg-slate-50 border-b border-slate-100" />
+          <div className="absolute top-0 left-0 w-full h-32 bg-slate-50 dark:bg-slate-700/30 border-b border-slate-100 dark:border-slate-700" />
 
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10 pt-4">
-            <Avatar name={user?.username || 'User'} size="xl" className="ring-4 ring-white shadow-lg" />
+            <Avatar name={user?.username || 'User'} size="xl" className="ring-4 ring-white dark:ring-slate-800 shadow-lg" />
 
             <div className="flex-1 text-center md:text-left space-y-3">
               <div>
-                <h1 id="profile-heading" className="text-2xl font-extrabold text-slate-900 mb-1">
+                <h1 id="profile-heading" className="text-2xl font-extrabold text-slate-900 dark:text-white mb-1">
                   {user?.username}
                 </h1>
-                <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-slate-500">
+                <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-slate-500 dark:text-slate-400">
                   {user?.email && (
                     <div className="flex items-center gap-1.5">
                       <Mail size={14} />
@@ -65,8 +65,8 @@ const Profile: React.FC = () => {
 
               <div className="flex flex-wrap justify-center md:justify-start gap-8 pt-2">
                 <div className="text-center md:text-left">
-                  <p className="text-xl font-extrabold text-slate-900">{posts.length}</p>
-                  <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Posts</p>
+                  <p className="text-xl font-extrabold text-slate-900 dark:text-white">{posts.length}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">Posts</p>
                 </div>
               </div>
             </div>
@@ -81,13 +81,13 @@ const Profile: React.FC = () => {
 
         {/* Tabs */}
         <div className="space-y-6">
-          <div className="flex gap-1 border-b border-slate-200">
+          <div className="flex gap-1 border-b border-slate-200 dark:border-slate-700">
             <button
               onClick={() => setActiveTab('published')}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all ${
                 activeTab === 'published'
-                  ? 'text-indigo-600 border-indigo-600'
-                  : 'text-slate-500 border-transparent hover:text-slate-700'
+                  ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400'
+                  : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
               <Grid size={16} />
@@ -97,8 +97,8 @@ const Profile: React.FC = () => {
               onClick={() => setActiveTab('liked')}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all ${
                 activeTab === 'liked'
-                  ? 'text-indigo-600 border-indigo-600'
-                  : 'text-slate-500 border-transparent hover:text-slate-700'
+                  ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400'
+                  : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
               <Heart size={16} />
@@ -143,13 +143,13 @@ function ProfilePostCard({ post }: { post: Post }) {
   return (
     <Link
       to={`/post/${post.id}`}
-      className="block group bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-300"
+      className="block group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-xs hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300"
     >
-      <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors mb-2 line-clamp-2 leading-snug">
+      <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2 line-clamp-2 leading-snug">
         {post.title}
       </h3>
       {post.summary && (
-        <p className="text-sm text-slate-500 line-clamp-2 mb-3 leading-relaxed">{post.summary}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3 leading-relaxed">{post.summary}</p>
       )}
       <div className="flex items-center gap-2 flex-wrap">
         {tagsArray.map((tag, i) => (
@@ -161,7 +161,7 @@ function ProfilePostCard({ post }: { post: Post }) {
           </Badge>
         )}
       </div>
-      <p className="text-xs text-slate-400 mt-3">
+      <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">
         {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
       </p>
     </Link>

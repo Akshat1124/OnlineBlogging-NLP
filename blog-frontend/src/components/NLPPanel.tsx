@@ -48,8 +48,8 @@ function SectionTitle({ icon, title, badge }: { icon: React.ReactNode; title: st
   return (
     <div className="flex items-center justify-between mb-3">
       <div className="flex items-center gap-2">
-        <span className="text-slate-400">{icon}</span>
-        <h4 className="text-xs font-bold tracking-wide uppercase text-slate-500">{title}</h4>
+        <span className="text-slate-400 dark:text-slate-500">{icon}</span>
+        <h4 className="text-xs font-bold tracking-wide uppercase text-slate-500 dark:text-slate-400">{title}</h4>
       </div>
       {badge}
     </div>
@@ -61,9 +61,9 @@ function SentimentCard({ data }: { data: NLPResult['sentiment'] }) {
   if (!data) return null;
 
   const colorMap: Record<string, { bg: string; text: string; dot: string }> = {
-    POSITIVE: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500' },
-    NEGATIVE: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500' },
-    NEUTRAL: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500' },
+    POSITIVE: { bg: 'bg-emerald-50 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-400', dot: 'bg-emerald-500' },
+    NEGATIVE: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', dot: 'bg-red-500' },
+    NEUTRAL: { bg: 'bg-amber-50 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400', dot: 'bg-amber-500' },
   };
 
   const colors = colorMap[data.label] || colorMap.NEUTRAL;
@@ -78,7 +78,7 @@ function SentimentCard({ data }: { data: NLPResult['sentiment'] }) {
         <span className={`text-xs ${colors.text} opacity-60 ml-auto`}>{confidence}%</span>
       </div>
       {data.summary && (
-        <p className="text-xs text-slate-500 mt-2 leading-relaxed italic">{data.summary}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed italic">{data.summary}</p>
       )}
     </div>
   );
@@ -95,7 +95,7 @@ function KeywordsCard({ data }: { data: NLPResult['keywords'] }) {
         {data.keywords.slice(0, 8).map((kw, i) => (
           <span
             key={i}
-            className="inline-flex items-center px-2.5 py-1 bg-slate-100 text-slate-600 text-[11px] font-medium rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+            className="inline-flex items-center px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-medium rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             {kw.keyword}
           </span>
@@ -119,7 +119,7 @@ function SummaryCard({ data }: { data: NLPResult['summary'] }) {
           <span className="text-[11px] font-medium text-slate-400">−{reduction}%</span>
         }
       />
-      <p className="text-sm text-slate-600 leading-relaxed">{data.summary}</p>
+      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{data.summary}</p>
     </div>
   );
 }
@@ -131,8 +131,8 @@ function SpamCard({ data }: { data: NLPResult['spam'] }) {
   return (
     <div className={`animate-fade-in rounded-xl p-3.5 border ${
       data.is_spam
-        ? 'border-red-200 bg-red-50'
-        : 'border-emerald-200 bg-emerald-50'
+        ? 'border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20'
+        : 'border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20'
     }`}>
       <SectionTitle
         icon={<Shield size={14} />}
@@ -184,14 +184,14 @@ function GrammarCard({ data, onApply }: { data: NLPResult['grammar']; onApply: (
         <>
           <ul className="space-y-1.5 mb-3">
             {data.matches.slice(0, 4).map((match, i) => (
-              <li key={i} className="text-xs text-slate-600 leading-relaxed">
+              <li key={i} className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 {match.message}
               </li>
             ))}
           </ul>
           <button
             onClick={onApply}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-all"
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all"
           >
             Apply fixes
           </button>
@@ -217,10 +217,10 @@ function NERCard({ data }: { data: NLPResult['ner'] }) {
       <div className="space-y-2">
         {Object.entries(data.grouped).slice(0, 5).map(([label, texts]) => (
           <div key={label} className="flex items-start gap-2">
-            <span className="text-[10px] font-bold tracking-wide uppercase text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0">
+            <span className="text-[10px] font-bold tracking-wide uppercase text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0">
               {label}
             </span>
-            <span className="text-xs text-slate-600 leading-relaxed">
+            <span className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               {(texts as string[]).join(', ')}
             </span>
           </div>
@@ -238,15 +238,15 @@ const InsightsPanel: React.FC<InsightsPanelProps> = ({
   onClose,
 }) => {
   return (
-    <div className="w-full md:w-[300px] flex-shrink-0 border-t md:border-t-0 md:border-l border-slate-200 bg-white flex flex-col h-full">
+    <div className="w-full md:w-[300px] flex-shrink-0 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800">
         <h3 className="text-xs font-bold tracking-widest uppercase text-slate-400">
           AI Insights
         </h3>
         <button
           onClick={onClose}
-          className="p-1 rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600"
+          className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
         >
           <X size={14} />
         </button>

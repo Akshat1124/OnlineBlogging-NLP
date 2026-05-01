@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import useAuthStore from '../store/authStore';
+import { useAuthGuard } from '../lib/useAuthGuard';
+import AuthGuardModal from './AuthGuardModal';
 import Avatar from './ui/Avatar';
 import Button from './ui/Button';
+import { formatDate, getSentimentConfig } from '../lib/utils';
 
 interface Comment {
   id: number;
@@ -17,26 +20,12 @@ interface CommentSectionProps {
   postId: number;
 }
 
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
-
-function getSentimentStyle(label: string | null) {
-  if (label === 'POSITIVE') return 'text-emerald-600';
-  if (label === 'NEGATIVE') return 'text-red-600';
-  return 'text-indigo-600';
-}
-
 const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const { isAuthenticated, user } = useAuthStore();
+  const { requireAuth, guardModalProps } = useAuthGuard();
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -52,6 +41,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!requireAuth('post a comment')) return;
     if (!newComment.trim()) return;
 
     setSubmitting(true);
@@ -68,48 +58,47 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     }
   };
 
+  const getSentimentStyle = (label: string | null) => {
+    const config = getSentimentConfig(label);
+    return config.color;
+  };
+
   return (
     <section id="comments-section">
-      <h2 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+      <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
         Discussion
-        <span className="text-sm font-medium text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-lg">
+        <span className="text-sm font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-2.5 py-0.5 rounded-lg">
           {comments.length}
         </span>
       </h2>
 
-      {isAuthenticated ? (
-        <form onSubmit={handleSubmit} className="mb-8">
-          <div className="flex gap-3 items-start">
-            <Avatar name={user?.username || 'User'} size="sm" className="mt-1" />
-            <div className="flex-1">
-              <textarea
-                id="comment-input"
-                className="w-full bg-white border border-slate-200 px-4 py-3 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none rounded-xl transition-all placeholder:text-slate-400"
-                rows={3}
-                placeholder="Write a comment..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-              />
-              <div className="mt-3 flex justify-end">
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={submitting || !newComment.trim()}
-                  loading={submitting}
-                >
-                  Post
-                </Button>
-              </div>
+      {/* Comment input — shows for both guests (with auth guard) and authenticated users */}
+      <form onSubmit={handleSubmit} className="mb-8">
+        <div className="flex gap-3 items-start">
+          <Avatar name={user?.username || 'Guest'} size="sm" className="mt-1" />
+          <div className="flex-1">
+            <textarea
+              id="comment-input"
+              className="w-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-4 py-3 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none rounded-xl transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-slate-200"
+              rows={3}
+              placeholder={isAuthenticated ? 'Write a comment...' : 'Sign in to leave a comment...'}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              onClick={() => { if (!isAuthenticated) requireAuth('post a comment'); }}
+            />
+            <div className="mt-3 flex justify-end">
+              <Button
+                type="submit"
+                size="sm"
+                disabled={submitting || !newComment.trim()}
+                loading={submitting}
+              >
+                Post
+              </Button>
             </div>
           </div>
-        </form>
-      ) : (
-        <div className="bg-slate-50 rounded-xl p-5 mb-8 text-center border border-slate-200">
-          <p className="text-sm text-slate-500">
-            <Link to="/login" className="text-indigo-600 font-semibold hover:underline">Log in</Link> to join the discussion.
-          </p>
         </div>
-      )}
+      </form>
 
       <div className="space-y-5">
         {comments.map((comment) => (
@@ -119,24 +108,24 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <Link
                   to={`/u/${comment.user?.username || 'Anonymous'}`}
-                  className="text-sm font-semibold text-slate-800 hover:text-indigo-600 transition-colors"
+                  className="text-sm font-semibold text-slate-800 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                 >
                   {comment.user?.username || 'Anonymous'}
                 </Link>
-                <span className="text-slate-300">·</span>
-                <span className="text-xs text-slate-400">
+                <span className="text-slate-300 dark:text-slate-600">·</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500">
                   {formatDate(comment.createdAt)}
                 </span>
                 {comment.sentimentLabel && (
                   <>
-                    <span className="text-slate-300">·</span>
+                    <span className="text-slate-300 dark:text-slate-600">·</span>
                     <span className={`text-xs font-medium ${getSentimentStyle(comment.sentimentLabel)}`}>
                       {comment.sentimentLabel.toLowerCase()}
                     </span>
                   </>
                 )}
               </div>
-              <div className="bg-slate-50 hover:bg-slate-100 transition-colors px-4 py-3 rounded-xl rounded-tl-sm text-sm text-slate-700 leading-relaxed border border-slate-100">
+              <div className="bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors px-4 py-3 rounded-xl rounded-tl-sm text-sm text-slate-700 dark:text-slate-300 leading-relaxed border border-slate-100 dark:border-slate-600">
                 {comment.content}
               </div>
             </div>
@@ -145,10 +134,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       </div>
 
       {comments.length === 0 && (
-        <p className="text-sm text-slate-400 text-center py-10">
+        <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-10">
           No comments yet. Start the conversation!
         </p>
       )}
+
+      {/* Auth Guard Modal */}
+      <AuthGuardModal {...guardModalProps} />
     </section>
   );
 };

@@ -10,12 +10,12 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: 'bg-slate-100 text-slate-600 border-slate-200',
-  positive: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  negative: 'bg-red-50 text-red-700 border-red-200',
-  neutral: 'bg-amber-50 text-amber-700 border-amber-200',
-  indigo: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-  outline: 'bg-white text-slate-600 border-slate-200',
+  default: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600',
+  positive: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
+  negative: 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800',
+  neutral: 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800',
+  indigo: 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800',
+  outline: 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-600',
 };
 
 const Badge: React.FC<BadgeProps> = ({ children, variant = 'default', className }) => {

@@ -14,7 +14,7 @@ const MainLayout: React.FC = () => {
   const showSidebar = !isAuthPage && !isWritePage;
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-white dark:bg-slate-900">
       <Navbar />
       <div className="flex flex-1 overflow-hidden">
         {showSidebar && (
@@ -25,7 +25,7 @@ const MainLayout: React.FC = () => {
             />
           </div>
         )}
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-950">
           <Outlet />
         </main>
       </div>

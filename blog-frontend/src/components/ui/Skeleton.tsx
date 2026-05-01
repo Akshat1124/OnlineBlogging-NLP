@@ -9,7 +9,7 @@ const Skeleton: React.FC<SkeletonProps> = ({ className }) => {
   return (
     <div
       className={cn(
-        'animate-pulse rounded-xl bg-slate-100',
+        'animate-pulse rounded-xl bg-slate-100 dark:bg-slate-700',
         className
       )}
     />
@@ -19,7 +19,7 @@ const Skeleton: React.FC<SkeletonProps> = ({ className }) => {
 /* Pre-composed skeleton variants */
 
 export const SkeletonCard: React.FC = () => (
-  <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 space-y-4">
     <div className="flex items-center gap-3">
       <Skeleton className="w-10 h-10 rounded-full" />
       <div className="space-y-2 flex-1">
@@ -38,7 +38,7 @@ export const SkeletonCard: React.FC = () => (
 );
 
 export const SkeletonArticle: React.FC = () => (
-  <div className="bg-white rounded-2xl border border-slate-200 p-8 md:p-12 space-y-6">
+  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-8 md:p-12 space-y-6">
     <Skeleton className="h-10 w-3/4" />
     <div className="flex gap-4">
       <Skeleton className="w-10 h-10 rounded-full" />

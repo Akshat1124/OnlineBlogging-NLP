@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -74,6 +76,12 @@
     display: flex;
     flex-direction: column;
   }
+
+  /* ─── Dark Mode Overrides ───────────────────────────────────── */
+  html.dark body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+  }
 }
 
 /* ─── Custom Scrollbar ─────────────────────────────────────────── */
@@ -93,6 +101,14 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted);
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
 /* ─── Prose for Article Content ────────────────────────────────── */
@@ -179,6 +195,31 @@
   margin: 2em 0;
 }
 
+/* Dark mode prose */
+html.dark .prose {
+  color: #cbd5e1;
+}
+
+html.dark .prose h1,
+html.dark .prose h2,
+html.dark .prose h3,
+html.dark .prose h4 {
+  color: #f1f5f9;
+}
+
+html.dark .prose pre {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+html.dark .prose code {
+  background: #1e293b;
+}
+
+html.dark .prose blockquote {
+  color: #94a3b8;
+}
+
 /* ─── Quill Editor Overrides ───────────────────────────────────── */
 .ql-toolbar.ql-snow {
   border: 1px solid var(--color-border) !important;
@@ -217,6 +258,41 @@
 
 .ql-snow .ql-picker-label {
   color: var(--color-text-tertiary) !important;
+}
+
+/* Dark Quill */
+html.dark .ql-toolbar.ql-snow {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark .ql-container.ql-snow {
+  border-color: #334155 !important;
+}
+
+html.dark .ql-editor {
+  color: #e2e8f0 !important;
+}
+
+html.dark .ql-editor.ql-blank::before {
+  color: #64748b !important;
+}
+
+html.dark .ql-snow .ql-stroke {
+  stroke: #94a3b8 !important;
+}
+
+html.dark .ql-snow .ql-fill {
+  fill: #94a3b8 !important;
+}
+
+html.dark .ql-snow .ql-picker-label {
+  color: #94a3b8 !important;
+}
+
+html.dark .ql-snow .ql-picker-options {
+  background: #1e293b !important;
+  border-color: #334155 !important;
 }
 
 /* ─── Animations ───────────────────────────────────────────────── */

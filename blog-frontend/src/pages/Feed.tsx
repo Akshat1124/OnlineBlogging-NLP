@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import useBlogStore, { Post } from '../store/blogStore';
 import { formatDistanceToNow } from 'date-fns';
-import { ChevronLeft, ChevronRight, Sparkles, TrendingUp, PenSquare } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen, TrendingUp, PenSquare } from 'lucide-react';
 import Avatar from '../components/ui/Avatar';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
@@ -44,10 +44,10 @@ const Feed: React.FC = () => {
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h1 id="feed-heading" className="text-2xl font-extrabold tracking-tight text-slate-900">
+                <h1 id="feed-heading" className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                   Latest Articles
                 </h1>
-                <p className="text-sm text-slate-500 mt-1">Discover AI-analyzed stories from our community.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Discover AI-analyzed stories from our community.</p>
               </div>
             </div>
 
@@ -76,7 +76,7 @@ const Feed: React.FC = () => {
             )}
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-4 mt-10 pt-6 border-t border-slate-200">
+              <div className="flex items-center justify-center gap-4 mt-10 pt-6 border-t border-slate-200 dark:border-slate-700">
                 <Button
                   variant="secondary"
                   size="sm"
@@ -86,7 +86,7 @@ const Feed: React.FC = () => {
                 >
                   Previous
                 </Button>
-                <span className="text-sm font-medium text-slate-500">
+                <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   Page {page + 1} of {totalPages}
                 </span>
                 <Button
@@ -105,12 +105,12 @@ const Feed: React.FC = () => {
           {/* Right Column: Sidebar recommendations */}
           <div className="w-full lg:w-80 flex-shrink-0 space-y-8">
             {/* CTA Card */}
-            <Card className="text-center bg-slate-50 border-slate-200 shadow-none">
-              <div className="w-12 h-12 mx-auto mb-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-center shadow-xs">
-                <Sparkles size={22} className="text-slate-700" />
+            <Card className="text-center bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 shadow-none">
+              <div className="w-12 h-12 mx-auto mb-4 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-2xl flex items-center justify-center shadow-xs">
+                <BookOpen size={22} className="text-slate-700 dark:text-slate-300" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 mb-2">Get AI-Powered Insights</h3>
-              <p className="text-sm text-slate-500 mb-5">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">Get AI-Powered Insights</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-5">
                 Analyze grammar, sentiment, and spam detection as you write.
               </p>
               <Link to="/write">
@@ -120,8 +120,8 @@ const Feed: React.FC = () => {
 
             {/* Trending Stories */}
             <div>
-              <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                 <TrendingUp size={16} className="text-indigo-600" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                 <TrendingUp size={16} className="text-indigo-600 dark:text-indigo-400" />
                  Trending Stories
               </h3>
               <div className="space-y-4">
@@ -131,18 +131,18 @@ const Feed: React.FC = () => {
                     to={`/post/${post.id}`}
                     className="flex items-start gap-3 group"
                   >
-                    <span className="text-2xl font-extrabold text-slate-200 leading-none w-7 shrink-0 group-hover:text-indigo-300 transition-colors">
+                    <span className="text-2xl font-extrabold text-slate-200 dark:text-slate-700 leading-none w-7 shrink-0 group-hover:text-indigo-300 dark:group-hover:text-indigo-500 transition-colors">
                       {String(idx + 1).padStart(2, '0')}
                     </span>
                     <div className="min-w-0 pt-0.5">
-                      <p className="text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug mb-1">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 leading-snug mb-1">
                          {post.title}
                       </p>
-                      <span className="text-xs text-slate-400 font-medium">by {post.username}</span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">by {post.username}</span>
                     </div>
                   </Link>
                 )) : (
-                  <p className="text-xs text-slate-400 text-center py-4">Finding trending stories...</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-4">Finding trending stories...</p>
                 )}
               </div>
             </div>
@@ -161,29 +161,29 @@ function FeedCard({ post }: { post: Post }) {
   return (
     <Link
       to={`/post/${post.id}`}
-      className="block group bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-300"
+      className="block group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300"
     >
       <div className="flex items-center gap-3 mb-4">
         <Avatar name={post.username || 'U'} size="sm" />
         <div className="leading-tight min-w-0">
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = `/u/${post.username}`; }}
-            className="text-sm font-semibold text-slate-800 block hover:text-indigo-600 text-left transition-colors truncate"
+            className="text-sm font-semibold text-slate-800 dark:text-slate-200 block hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors truncate"
           >
             {post.username}
           </button>
-          <span className="text-xs text-slate-400 font-medium">
+          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
             {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
           </span>
         </div>
       </div>
 
-      <h2 className="text-lg font-bold tracking-tight leading-snug text-slate-900 group-hover:text-indigo-600 transition-colors mb-2 line-clamp-2">
+      <h2 className="text-lg font-bold tracking-tight leading-snug text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2 line-clamp-2">
         {post.title}
       </h2>
 
       {post.summary && (
-        <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 mb-4">
+        <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 mb-4">
           {post.summary}
         </p>
       )}
