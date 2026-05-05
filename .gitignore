@@ -53,3 +53,6 @@ maven-debug.log
 # Temporary files
 /tmp/
 .temp/
+
+# Build artifacts
+blog-frontend/dist/
