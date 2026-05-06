@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,11 +30,22 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(auth -> auth
+                        // Swagger UI — must be permitted so devs can explore the API
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/nlp/**").permitAll()   // ✅ NLP endpoint open
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts", "/api/posts/**").permitAll() // ✅ Public access to read blogs
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/profile/**", "/api/users/posts/**", "/api/users/search").permitAll() // ✅ Public social profiles
+                        .requestMatchers("/api/nlp/**").permitAll()   // NLP endpoint open
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts", "/api/posts/**", "/api/comments/**").permitAll() // Public access to read blogs and comments
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/profile/**", "/api/users/posts/**", "/api/users/search", "/api/users/me/comments").permitAll() // Public social profiles
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

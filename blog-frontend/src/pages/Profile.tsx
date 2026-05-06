@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import useAuthStore from '../store/authStore';
 import { Post } from '../store/blogStore';
-import { Mail, Calendar, Grid, Heart, PenSquare } from 'lucide-react';
+import { Mail, Calendar, Grid, MessageSquare, PenSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import Avatar from '../components/ui/Avatar';
 import Badge from '../components/ui/Badge';
@@ -16,22 +16,25 @@ import { getSentimentConfig } from '../lib/utils';
 const Profile: React.FC = () => {
   const { user } = useAuthStore();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [activeTab, setActiveTab] = useState<'published' | 'liked'>('published');
+  const [activeTab, setActiveTab] = useState<'published' | 'comments'>('published');
   const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchUserPosts = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await api.get('/users/me/posts');
-        setPosts(response.data);
+        const postsRes = await api.get('/users/me/posts');
+        setPosts(postsRes.data);
+        const commentsRes = await api.get('/users/me/comments');
+        setComments(commentsRes.data);
       } catch (error) {
-        // Failed to load posts
+        // Failed to load data
       } finally {
         setLoading(false);
       }
     };
-    fetchUserPosts();
+    fetchData();
   }, []);
 
   return (
@@ -68,6 +71,10 @@ const Profile: React.FC = () => {
                   <p className="text-xl font-extrabold text-slate-900 dark:text-white">{posts.length}</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">Posts</p>
                 </div>
+                <div className="text-center md:text-left">
+                  <p className="text-xl font-extrabold text-slate-900 dark:text-white">{comments.length}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">Comments</p>
+                </div>
               </div>
             </div>
 
@@ -94,15 +101,15 @@ const Profile: React.FC = () => {
               Published
             </button>
             <button
-              onClick={() => setActiveTab('liked')}
+              onClick={() => setActiveTab('comments')}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all ${
-                activeTab === 'liked'
+                activeTab === 'comments'
                   ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-400'
                   : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
-              <Heart size={16} />
-              Liked
+              <MessageSquare size={16} />
+              Comments
             </button>
           </div>
 
@@ -110,24 +117,41 @@ const Profile: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
             </div>
-          ) : posts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {posts.map(post => (
-                <ProfilePostCard key={post.id} post={post} />
-              ))}
-            </div>
+          ) : activeTab === 'published' ? (
+            posts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {posts.map(post => (
+                  <ProfilePostCard key={post.id} post={post} />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <EmptyState
+                  title="No posts yet"
+                  description="Start writing to see your posts here."
+                  action={
+                    <Link to="/write">
+                      <Button icon={<PenSquare size={15} />}>Write Your First Post</Button>
+                    </Link>
+                  }
+                />
+              </Card>
+            )
           ) : (
-            <Card>
-              <EmptyState
-                title="No posts yet"
-                description="Start writing to see your posts here."
-                action={
-                  <Link to="/write">
-                    <Button icon={<PenSquare size={15} />}>Write Your First Post</Button>
-                  </Link>
-                }
-              />
-            </Card>
+            comments.length > 0 ? (
+              <div className="space-y-4">
+                {comments.map(comment => (
+                  <ProfileCommentCard key={comment.id} comment={comment} />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <EmptyState
+                  title="No comments yet"
+                  description="Engage with others by leaving a comment on a post."
+                />
+              </Card>
+            )
           )}
         </div>
       </div>
@@ -165,6 +189,36 @@ function ProfilePostCard({ post }: { post: Post }) {
         {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
       </p>
     </Link>
+  );
+}
+
+/* ─── Profile Comment Card ────────────────────────────────────── */
+function ProfileCommentCard({ comment }: { comment: any }) {
+  const sentimentConfig = getSentimentConfig(comment.sentimentLabel);
+
+  return (
+    <Card padding="md" className="group hover:border-slate-300 dark:hover:border-slate-600 transition-all">
+      <div className="flex items-start gap-4">
+        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 text-slate-500 dark:text-slate-400">
+          <MessageSquare size={18} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-3">
+            {comment.content}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            {comment.sentimentLabel && (
+              <Badge variant={comment.sentimentLabel === 'POSITIVE' ? 'positive' : comment.sentimentLabel === 'NEGATIVE' ? 'negative' : 'neutral'}>
+                {sentimentConfig.label} Sentiment
+              </Badge>
+            )}
+            <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+              {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }
 

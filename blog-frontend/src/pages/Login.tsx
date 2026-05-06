@@ -28,8 +28,8 @@ const Login: React.FC = () => {
       toast.success('Welcome back');
       navigate('/');
     } catch (error: any) {
-      if (error.response?.status === 403 || error.response?.status === 401) {
-          toast.error("Invalid username or password");
+      if (error.response?.status === 403 || error.response?.status === 401 || error.response?.status === 400) {
+          toast.error(error.response?.data?.message || "Invalid username or password");
       } else {
           toast.error(error.response?.data?.message || 'Login failed');
       }

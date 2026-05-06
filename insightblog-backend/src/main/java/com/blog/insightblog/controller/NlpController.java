@@ -3,6 +3,7 @@ package com.blog.insightblog.controller;
 import com.blog.insightblog.model.ModerationLog;
 import com.blog.insightblog.repository.ModerationLogRepository;
 import com.blog.insightblog.service.NlpService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import java.util.Map;
  *   POST /api/nlp/rewrite      → AI tone improvement
  *   GET  /api/nlp/moderation-logs → admin: view all moderation decisions
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/nlp")
 @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "http://localhost:3002"})
@@ -36,10 +38,11 @@ public class NlpController {
     @Autowired
     private ModerationLogRepository moderationLogRepository;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @Value("${nlp.service.url}")
     private String nlpUrl;
-
-    private final RestTemplate restTemplate = new RestTemplate();
 
     /**
      * Frontend sends: { "text": "blog content here" }
@@ -127,7 +130,7 @@ public class NlpController {
             return ResponseEntity.ok(result);
 
         } catch (Exception e) {
-            System.err.println("Moderation service unreachable: " + e.getMessage());
+            log.error("Moderation service unreachable: {}", e.getMessage());
             // Fallback: allow publish if NLP service is down
             Map<String, Object> fallback = new HashMap<>();
             fallback.put("allowed", true);

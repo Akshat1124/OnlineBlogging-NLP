@@ -24,6 +24,9 @@ public class UserController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private com.blog.insightblog.service.CommentService commentService;
+
     /**
      * GET /api/users/me
      * Returns the logged-in user's profile info.
@@ -85,6 +88,17 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         return postService.getPostsByUsername(username);
+    }
+
+    /**
+     * GET /api/users/me/comments
+     * Returns all comments made by the logged-in user.
+     */
+    @GetMapping("/me/comments")
+    public List<com.blog.insightblog.dto.CommentDTO> getMyComments() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        return commentService.getCommentsByUsername(username);
     }
 
     /**

@@ -3,8 +3,10 @@ package com.blog.insightblog.controller;
 import com.blog.insightblog.dto.AuthRequest;
 import com.blog.insightblog.model.User;
 import com.blog.insightblog.service.AuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -18,14 +20,14 @@ public class AuthController {
     // REGISTER
     @PostMapping("/register")
     public User register(@RequestBody AuthRequest request) {
-        System.out.println("Registering user: " + request.getUsername());
+        log.info("Register request: {}", request.getUsername());
         return authService.register(request);
     }
 
     // LOGIN
     @PostMapping("/login")
     public String login(@RequestBody AuthRequest request) {
-        System.out.println("Login attempt for: " + request.getUsername());
+        log.info("Login request: {}", request.getUsername());
         return authService.login(request);
     }
-}
+}

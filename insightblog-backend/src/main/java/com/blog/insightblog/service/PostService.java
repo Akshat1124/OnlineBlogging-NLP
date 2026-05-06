@@ -128,4 +128,10 @@ public class PostService {
                 .map(this::mapToDTO)
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    // FILTER BY SENTIMENT SCORE — from new repo
+    public Page<PostDTO> getPostsBySentiment(Double minSentiment, Pageable pageable) {
+        return postRepository.findAll(pageable)
+                .map(this::mapToDTO);
+    }
 }

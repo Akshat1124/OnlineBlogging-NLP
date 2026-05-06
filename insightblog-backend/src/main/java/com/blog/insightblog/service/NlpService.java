@@ -1,5 +1,6 @@
 package com.blog.insightblog.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -12,13 +13,18 @@ import java.util.Map;
  * Calls the Python NLP FastAPI service running at localhost:8000.
  * All analysis is done via POST /analyse/full which runs all 5 NLP features.
  */
+@Slf4j
 @Service
 public class NlpService {
 
     @Value("${nlp.service.url}")
     private String nlpUrl;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    public NlpService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     /**
      * Sends blog text to the NLP service and returns a map containing:
@@ -42,7 +48,7 @@ public class NlpService {
             return response != null ? response : new HashMap<>();
         } catch (Exception e) {
             // NLP service unreachable — return empty map so blog can still be saved
-            System.err.println("NLP service unavailable: " + e.getMessage());
+            log.warn("NLP service unavailable: {}", e.getMessage());
             return new HashMap<>();
         }
     }

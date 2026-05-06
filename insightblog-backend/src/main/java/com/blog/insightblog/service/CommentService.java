@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import com.blog.insightblog.dto.CommentDTO;
+import com.blog.insightblog.dto.UserDTO;
 
 @Service
 public class CommentService {
@@ -34,7 +37,7 @@ public class CommentService {
      * Creates a comment after analysing its sentiment via NLP.
      * Saves sentimentLabel (POSITIVE / NEGATIVE / NEUTRAL) to the comment.
      */
-    public Comment createComment(Long postId, String username, String content) {
+    public CommentDTO createComment(Long postId, String username, String content) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -58,10 +61,35 @@ public class CommentService {
                 .sentimentLabel(sentimentLabel)
                 .build();
 
-        return commentRepository.save(comment);
+        Comment saved = commentRepository.save(comment);
+        return mapToDTO(saved);
     }
 
-    public List<Comment> getCommentsByPost(Long postId) {
-        return commentRepository.findByPostId(postId);
+    public List<CommentDTO> getCommentsByPost(Long postId) {
+        return commentRepository.findByPostId(postId).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    public List<CommentDTO> getCommentsByUsername(String username) {
+        return commentRepository.findByUserUsername(username).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private CommentDTO mapToDTO(Comment comment) {
+        CommentDTO dto = new CommentDTO();
+        dto.setId(comment.getId());
+        dto.setContent(comment.getContent());
+        dto.setSentimentLabel(comment.getSentimentLabel());
+        dto.setCreatedAt(comment.getCreatedAt());
+        
+        if (comment.getUser() != null) {
+            UserDTO userDto = new UserDTO();
+            userDto.setId(comment.getUser().getId());
+            userDto.setUsername(comment.getUser().getUsername());
+            dto.setUser(userDto);
+        }
+        return dto;
     }
 }

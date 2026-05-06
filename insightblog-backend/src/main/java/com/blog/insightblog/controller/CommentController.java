@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import com.blog.insightblog.dto.CommentDTO;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -26,7 +27,7 @@ public class CommentController {
      * Body: { "content": "Great post!" }
      */
     @PostMapping("/{postId}")
-    public Comment createComment(@PathVariable Long postId,
+    public CommentDTO createComment(@PathVariable Long postId,
                                  @RequestBody Map<String, String> body) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
@@ -39,7 +40,7 @@ public class CommentController {
      * Each comment includes: content, username, sentimentLabel, createdAt
      */
     @GetMapping("/{postId}")
-    public List<Comment> getComments(@PathVariable Long postId) {
+    public List<CommentDTO> getComments(@PathVariable Long postId) {
         return commentService.getCommentsByPost(postId);
     }
 }
